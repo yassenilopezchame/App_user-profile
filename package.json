@@ -1,5 +1,5 @@
 {
-  "name": "profile-card-interactive",
+  "name": "profile-card-modals",
   "version": "1.0.0",
   "main": "index.js",
   "private": true,
@@ -12,6 +12,7 @@
   "dependencies": {
     "expo": "~58.0.20",
     "react": "19.3.0",
-    "react-native": "0.88.0"
+    "react-native": "0.88.0",
+    "react-native-safe-area-context": "~5.10.1"
   }
 }
