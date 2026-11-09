@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Modal } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { Switch } from 'react-native';
 // TODO: add the imports you need in each step (Modal, SafeAreaView from 'react-native-safe-area-context'...)
 import { View, Text, Image, Pressable, TextInput, Button, Alert, ScrollView, StyleSheet, Platform } from 'react-native';
 
@@ -63,6 +64,13 @@ export default function App() {
   const isShareDisabled = selectedContacts.length === 0;
   const followers = BASE_FOLLOWERS + (isFollowing ? 1 : 0);
   const isSendDisabled = message.trim().length === 0;
+  // BONUS
+  const [searchText, setSearchText] = useState('');
+  const filteredContacts = CONTACTS.filter((c) =>
+    c.toLowerCase().includes(searchText.toLowerCase())
+  );
+  const [allowComments, setAllowComments] = useState(true);
+
   const stats = [
     { label: 'Projects', value: '24' },
     { label: 'Followers', value: formatCount(followers) },
@@ -78,7 +86,12 @@ export default function App() {
   };
 
   const handleConfirmShare = () => {
-    Alert.alert('Profile shared', 'Sent to: ' + selectedContacts.join(', '));
+    Alert.alert(
+      'Profile shared',
+      `Sent to: ${selectedContacts.join(', ')}${
+        allowComments ? ' (comments allowed)' : ' (comments off)'
+      }`
+    );
     closeModal();
   };
 
@@ -270,8 +283,15 @@ export default function App() {
               <Text style={styles.sheetTitle}>Share profile</Text>
               <Text style={styles.sheetText}>Choose who gets Alex's profile.</Text>
 
+                <TextInput
+                  style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 8, marginBottom: 8 }}
+                  placeholder="Search contacts"
+                  value={searchText}
+                  onChangeText={setSearchText}
+                />
+
               <ScrollView style={styles.contactList}>
-                {CONTACTS.map((contact) => {
+                {filteredContacts.map((contact) => {
                   const selected = selectedContacts.includes(contact);
                   return (
                     <Pressable
@@ -287,6 +307,11 @@ export default function App() {
                   );
                 })}
               </ScrollView>
+
+              <View style={styles.switchRow}>
+                <Text style={styles.contactName}>Allow comments</Text>
+                <Switch value={allowComments} onValueChange={setAllowComments} />
+              </View>
 
               <Pressable
                 style={[styles.shareButton, isShareDisabled && styles.shareButtonDisabled]}
@@ -653,5 +678,22 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: COLORS.background,
+  },
+  switchRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  searchInput: {
+    height: 44,
+    paddingHorizontal: 12,
+    fontSize: 15,
+    color: COLORS.text,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 12,
+    marginBottom: 8,
   },
 });
